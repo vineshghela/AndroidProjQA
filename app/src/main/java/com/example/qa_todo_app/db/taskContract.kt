@@ -10,6 +10,6 @@ object TaskContract {
     object TaskEntry : BaseColumns {
         val _ID = BaseColumns._ID
         const val TABLE = "tasks"
-         const val COL_TASK_TITLE = "title"
+        const val COL_TASK_TITLE = "title"
     }
 }

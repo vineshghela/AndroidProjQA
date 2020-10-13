@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.provider.BaseColumns
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -48,6 +50,9 @@ class MainActivity : AppCompatActivity() {
         )
         while (cursor.moveToNext()) {
             val idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)
+            Log.d("ID",idx.toString())
+            val something = BaseColumns._ID
+            Log.d("OtherID", something)
             taskList.add(cursor.getString(idx))
         }
 
@@ -79,8 +84,7 @@ class MainActivity : AppCompatActivity() {
             R.id.action_add_task -> {
                 val taskEditText = EditText(this)
                 val dialog = AlertDialog.Builder(this)
-                    .setTitle("Add a new task")
-                    .setMessage("What do you want to do next?")
+                    .setTitle("Add a new task!")
                     .setView(taskEditText)
                     .setPositiveButton(
                         "Add"
@@ -119,6 +123,47 @@ class MainActivity : AppCompatActivity() {
         db.close()
         updateUI()
     }
+
+    fun updateTask(view: View){
+        val parent = view.parent as View
+        val taskTextView = parent.findViewById<View>(R.id.task_title) as TextView
+        val task = taskTextView.text.toString()
+        val message = "Current todo is: "
+
+        Log.d(TAG, "Task: " + task);
+
+        val taskEditText = EditText(this)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Update task!")
+            .setView(taskEditText)
+            .setMessage(message+task)
+            .setPositiveButton(
+                "Add"
+            )
+            { dialog, which ->
+                val task = taskEditText.text.toString()
+                val db = mHelper.writableDatabase
+                val values = ContentValues()
+                val check = taskEditText.id
+                val id = TaskContract.TaskEntry._ID
+                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task)
+                db.update(
+                    TaskContract.TaskEntry.TABLE,
+                    null,
+                    "$\\s COLUMN_ID=?",
+                    arrayOf(id)
+                )
+                db.close()
+                updateUI()
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+        dialog.show()
+        true
+    }
 }
+
+
+
 
 
